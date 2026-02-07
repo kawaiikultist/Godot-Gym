@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://dc0qjp34ris25"]
+
+[ext_resource type="Material" uid="uid://22e6uu5soc7m" path="res://assets/prototype_textures/dark/01.tres" id="1_tn8io"]
+[ext_resource type="PackedScene" uid="uid://dw3ogacrge55v" path="res://entities/player/basic/basic_player.tscn" id="2_uppuh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_kj60i"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_tn8io"]
+sky_material = SubResource("ProceduralSkyMaterial_kj60i")
+
+[sub_resource type="Environment" id="Environment_uppuh"]
+background_mode = 2
+sky = SubResource("Sky_tn8io")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_uppuh"]
+size = Vector3(16, 0.2, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tn8io"]
+size = Vector3(16, 0.2, 16)
+
+[node name="Hub" type="Node3D" unique_id=1004540318]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1822617746]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=80095193]
+environment = SubResource("Environment_uppuh")
+
+[node name="Level" type="Node3D" parent="." unique_id=1779213092]
+
+[node name="Ground" type="StaticBody3D" parent="Level" unique_id=1192386252]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Level/Ground" unique_id=2052456746]
+material_override = ExtResource("1_tn8io")
+mesh = SubResource("BoxMesh_uppuh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Level/Ground" unique_id=1818294775]
+shape = SubResource("BoxShape3D_tn8io")
+
+[node name="Player" parent="." unique_id=506562799 instance=ExtResource("2_uppuh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
