@@ -5,7 +5,11 @@ class_name Player extends CharacterBody3D;
 # ## EXPORTS ## #
 # ############# #
 
+@export_group("-- Features --")
+@export var enable_zoom: bool = true;
+
 @export_category("Basics")
+
 @export_group("H Movement")
 @export var move_speed: float = 7.0
 @export var move_accel: float = 20.0;
@@ -17,7 +21,9 @@ class_name Player extends CharacterBody3D;
 @export var jump_force: float = 7.5;
 
 @export_group("Camera")
-@export var zoom_pct: float = 0.7;
+## Multiplied by delta to get the weight for interoplating the camera's FOV.
+@export var zoom_speed: float = 15.0;
+@export var zoom_fov: float = 40.0;
 
 
 # ############### #
@@ -31,7 +37,7 @@ class_name Player extends CharacterBody3D;
 # ############# #
 # ## ONREADY ## #
 # ############# #
-
+@onready var _init_cam_fov: float = _camera.fov;
 
 
 # ####################### #
@@ -60,11 +66,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			rotate_view(event.relative, PlayerConf.VIEW_SENS_MOUSE);
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	rotate_view(
 		Input.get_vector("look_left", "look_right", "look_up", "look_down"),
 		PlayerConf.VIEW_SENS_CONTROLLER
 	);
+	
+	if enable_zoom:
+		handle_camera_zoom(Input.is_action_pressed("action_zoom"), delta);
 
 
 func _physics_process(delta: float) -> void:
@@ -87,9 +96,17 @@ func _physics_process(delta: float) -> void:
 # ## Camera Controls ## #
 # ##################### #
 
+func handle_camera_zoom(do: bool, delta: float) -> void:
+	var target := zoom_fov if do else _init_cam_fov;
+	_camera.fov = lerpf(_camera.fov, target, zoom_speed * delta);
+
+
 func rotate_view(vec: Vector2, sens: float) -> void:
-	rotate_y(-vec.x * sens);
-	_pivot.rotate_x(-vec.y * sens);
+	# Lowers sensitivity when zooming in.
+	var zoom_fix: float = inverse_lerp(0.0, _init_cam_fov, _camera.fov);
+	
+	rotate_y(-vec.x * sens * zoom_fix);
+	_pivot.rotate_x(-vec.y * sens * zoom_fix);
 	_pivot.rotation.y = clampf(
 		_pivot.rotation.y,
 		deg_to_rad(-90),
@@ -102,6 +119,8 @@ func toggle_mouse() -> void:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE);
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
+
+
 
 
 # ############## #
