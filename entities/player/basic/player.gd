@@ -7,12 +7,14 @@ class_name Player extends CharacterBody3D;
 
 @export_group("-- Features --")
 @export var enable_zoom: bool = true;
+@export var enable_viewbob: bool = true;
 
 @export_category("Basics")
-
 @export_group("H Movement")
 @export var move_speed: float = 7.0
+## Multiplied by delta to get the weight for interoplating move_speed.
 @export var move_accel: float = 20.0;
+## Same as move_accel but used when the player stops moving.
 @export var move_decel: float = 15.0;
 
 @export_group("V Movement")
@@ -23,7 +25,9 @@ class_name Player extends CharacterBody3D;
 @export_group("Camera")
 ## Multiplied by delta to get the weight for interoplating the camera's FOV.
 @export var zoom_speed: float = 15.0;
-@export var zoom_fov: float = 40.0;
+@export var zoom_fov: float = 35.0;
+@export var bob_freq: float = 2.0;
+@export var bob_amp: float = 1.0;
 
 
 # ############### #
@@ -43,8 +47,7 @@ class_name Player extends CharacterBody3D;
 # ####################### #
 # ## Private Variables ## #
 # ####################### #
-
-
+var _bob_time: float = 0.0;
 
 
 # ######################## #
@@ -74,6 +77,9 @@ func _process(delta: float) -> void:
 	
 	if enable_zoom:
 		handle_camera_zoom(Input.is_action_pressed("action_zoom"), delta);
+	
+	if enable_viewbob && is_on_floor():
+		handle_viewbob(delta);
 
 
 func _physics_process(delta: float) -> void:
@@ -107,12 +113,30 @@ func rotate_view(vec: Vector2, sens: float) -> void:
 	
 	rotate_y(-vec.x * sens * zoom_fix);
 	_pivot.rotate_x(-vec.y * sens * zoom_fix);
-	_pivot.rotation.y = clampf(
-		_pivot.rotation.y,
+	_pivot.rotation.x = clampf(
+		_pivot.rotation.x,
 		deg_to_rad(-90),
 		deg_to_rad(90)
 	);
 
+
+func handle_viewbob(delta: float) -> void:
+	var strength := smoothstep(
+		0.0,
+		move_speed,
+		Vector2(velocity.x, velocity.z).length()
+	);
+	
+	_bob_time += delta*strength;
+	
+	var bob := Vector2(
+		sin(_bob_time * bob_freq) * bob_amp,
+		sin(_bob_time * bob_freq * 2.0) * bob_amp * 0.5,
+	);
+	
+	_camera.h_offset = bob.x;
+	_camera.v_offset = bob.y;
+	
 
 func toggle_mouse() -> void:
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

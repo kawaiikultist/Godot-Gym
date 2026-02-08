@@ -17,10 +17,10 @@ tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_uppuh"]
-size = Vector3(16, 0.2, 16)
+size = Vector3(64, 0.2, 64)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tn8io"]
-size = Vector3(16, 0.2, 16)
+size = Vector3(64, 0.2, 64)
 
 [node name="Hub" type="Node3D" unique_id=1004540318]
 

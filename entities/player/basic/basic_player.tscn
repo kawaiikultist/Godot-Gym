@@ -8,6 +8,8 @@ radius = 0.4
 
 [node name="Player" type="CharacterBody3D" unique_id=506562799]
 script = ExtResource("1_xp6dt")
+bob_freq = 6.0
+bob_amp = 0.08
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=217300151]
 
