@@ -16,6 +16,8 @@ class_name Player extends CharacterBody3D;
 @export var move_accel: float = 20.0;
 ## Same as move_accel but used when the player stops moving.
 @export var move_decel: float = 15.0;
+## Used to decrease move_accel and move_decel when in the air.
+@export var move_air_mult: float = 0.2;
 
 @export_group("V Movement")
 @export var max_fall_speed: float = 50.0;
@@ -26,8 +28,8 @@ class_name Player extends CharacterBody3D;
 ## Multiplied by delta to get the weight for interoplating the camera's FOV.
 @export var zoom_speed: float = 15.0;
 @export var zoom_fov: float = 35.0;
-@export var bob_freq: float = 2.0;
-@export var bob_amp: float = 1.0;
+@export var bob_freq: float = 6.0;
+@export var bob_amp: float = 0.08;
 
 
 # ############### #
@@ -42,6 +44,7 @@ class_name Player extends CharacterBody3D;
 # ## ONREADY ## #
 # ############# #
 @onready var _init_cam_fov: float = camera.fov;
+@onready var vignette_mat := $UI/ZoomVignette.material as ShaderMaterial;
 
 
 # ####################### #
@@ -76,7 +79,7 @@ func _process(delta: float) -> void:
 	);
 	
 	if enable_zoom:
-		handlecamera_zoom(Input.is_action_pressed("action_zoom"), delta);
+		handle_camera_zoom(Input.is_action_pressed("action_zoom"), delta);
 	
 	if enable_viewbob && is_on_floor():
 		handle_viewbob(delta);
@@ -102,9 +105,13 @@ func _physics_process(delta: float) -> void:
 # ## Camera Controls ## #
 # ##################### #
 
-func handlecamera_zoom(do: bool, delta: float) -> void:
+func handle_camera_zoom(do: bool, delta: float) -> void:
 	var target := zoom_fov if do else _init_cam_fov;
 	camera.fov = lerpf(camera.fov, target, zoom_speed * delta);
+	
+	if vignette_mat:
+		var pct := inverse_lerp(_init_cam_fov, zoom_fov, camera.fov);
+		vignette_mat.set_shader_parameter("pct", pct);
 
 
 func rotate_view(vec: Vector2, sens: float) -> void:
@@ -160,6 +167,10 @@ func get_input() -> Vector3:
 
 func get_accel(input_vec: Vector3, delta: float) -> float:
 	var _weight := move_accel if input_vec.length_squared() > 0 else move_decel;
+	
+	if !is_on_floor():
+		_weight *= move_air_mult;
+	
 	return clampf(_weight * delta, 0.0, 1.0)
 
 
