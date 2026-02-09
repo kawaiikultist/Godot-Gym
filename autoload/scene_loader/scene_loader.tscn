@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://bat845kg3vpf6"]
+
+[ext_resource type="Script" uid="uid://dlicbffcqs5ng" path="res://autoload/scene_loader/scene_loader.gd" id="1_tjkod"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_5yiny"]
+font_size = 48
+
+[sub_resource type="Gradient" id="Gradient_tjkod"]
+interpolation_mode = 1
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_g27f1"]
+gradient = SubResource("Gradient_tjkod")
+width = 30
+height = 30
+fill = 2
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.8, 0.2)
+metadata/_snap_enabled = true
+
+[sub_resource type="Gradient" id="Gradient_ywk7u"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(0.84747404, 0.8474746, 0.84747446, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7omr0"]
+gradient = SubResource("Gradient_ywk7u")
+width = 1
+height = 1
+
+[node name="SceneLoader" type="CanvasLayer" unique_id=1130173584]
+process_mode = 3
+layer = 10
+script = ExtResource("1_tjkod")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=289068929]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=390009259]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="lblLoading" type="Label" parent="VBox" unique_id=1672369006]
+layout_mode = 2
+text = "Loading"
+label_settings = SubResource("LabelSettings_5yiny")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="progLoading" type="TextureProgressBar" parent="VBox" unique_id=291734857]
+custom_minimum_size = Vector2(512, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+fill_mode = 6
+nine_patch_stretch = true
+stretch_margin_left = 18
+stretch_margin_top = 18
+stretch_margin_right = 18
+stretch_margin_bottom = 18
+texture_over = SubResource("GradientTexture2D_g27f1")
+texture_progress = SubResource("GradientTexture2D_7omr0")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=313926431]

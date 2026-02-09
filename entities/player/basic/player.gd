@@ -34,14 +34,14 @@ class_name Player extends CharacterBody3D;
 # ## NODE REFS ## #
 # ############### #
 
-@onready var _pivot := $Pivot as Node3D;
-@onready var _camera := $Pivot/Camera as Camera3D;
+@onready var pivot := $Pivot as Node3D;
+@onready var camera := $Pivot/Camera as Camera3D;
 
 
 # ############# #
 # ## ONREADY ## #
 # ############# #
-@onready var _init_cam_fov: float = _camera.fov;
+@onready var _init_cam_fov: float = camera.fov;
 
 
 # ####################### #
@@ -76,7 +76,7 @@ func _process(delta: float) -> void:
 	);
 	
 	if enable_zoom:
-		handle_camera_zoom(Input.is_action_pressed("action_zoom"), delta);
+		handlecamera_zoom(Input.is_action_pressed("action_zoom"), delta);
 	
 	if enable_viewbob && is_on_floor():
 		handle_viewbob(delta);
@@ -102,19 +102,19 @@ func _physics_process(delta: float) -> void:
 # ## Camera Controls ## #
 # ##################### #
 
-func handle_camera_zoom(do: bool, delta: float) -> void:
+func handlecamera_zoom(do: bool, delta: float) -> void:
 	var target := zoom_fov if do else _init_cam_fov;
-	_camera.fov = lerpf(_camera.fov, target, zoom_speed * delta);
+	camera.fov = lerpf(camera.fov, target, zoom_speed * delta);
 
 
 func rotate_view(vec: Vector2, sens: float) -> void:
 	# Lowers sensitivity when zooming in.
-	var zoom_fix: float = inverse_lerp(0.0, _init_cam_fov, _camera.fov);
+	var zoom_fix: float = inverse_lerp(0.0, _init_cam_fov, camera.fov);
 	
 	rotate_y(-vec.x * sens * zoom_fix);
-	_pivot.rotate_x(-vec.y * sens * zoom_fix);
-	_pivot.rotation.x = clampf(
-		_pivot.rotation.x,
+	pivot.rotate_x(-vec.y * sens * zoom_fix);
+	pivot.rotation.x = clampf(
+		pivot.rotation.x,
 		deg_to_rad(-90),
 		deg_to_rad(90)
 	);
@@ -134,8 +134,8 @@ func handle_viewbob(delta: float) -> void:
 		sin(_bob_time * bob_freq * 2.0) * bob_amp * 0.5,
 	);
 	
-	_camera.h_offset = bob.x;
-	_camera.v_offset = bob.y;
+	camera.h_offset = bob.x;
+	camera.v_offset = bob.y;
 	
 
 func toggle_mouse() -> void:
